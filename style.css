@@ -286,6 +286,31 @@ body {
 .form-group {
     text-align: left;
 }
+.admin-preview-container {
+    margin-top: 40px;
+    padding: 20px;
+    background: #f4f4f4;
+    border-radius: 10px;
+}
+
+.admin-story-entry {
+    margin-bottom: 30px;
+    padding: 10px;
+}
+
+.admin-story-entry button.delete-story {
+    margin-top: 10px;
+    background-color: crimson;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    padding: 6px 12px;
+    cursor: pointer;
+}
+
+.admin-story-entry button:hover {
+    background-color: darkred;
+}
 
 .form-group label {
     font-weight: bold;
