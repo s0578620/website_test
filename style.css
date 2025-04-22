@@ -1,0 +1,348 @@
+html {
+    scroll-behavior: smooth;
+}
+
+body {
+    font-family: 'Open Sans', sans-serif;
+    margin: 0;
+    padding: 0;
+}
+
+.hero h1 {
+    font-family: 'Playfair Display', serif;
+}
+
+.fade-in {
+    opacity: 0;
+    animation: fadeInAnimation 1.5s ease forwards;
+    animation-delay: 0.5s;
+}
+
+@keyframes fadeInAnimation {
+    to {
+        opacity: 1;
+    }
+}
+.fade-in-top {
+    opacity: 0;
+    transform: translateY(-30px);
+    animation: fadeInTop 1.5s ease forwards;
+}
+
+.fade-in-bottom {
+    opacity: 0;
+    transform: translateY(30px);
+    animation: fadeInBottom 1.5s ease forwards;
+}
+
+@keyframes fadeInTop {
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes fadeInBottom {
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+.contact-container {
+    max-width: 600px;
+    margin: 100px auto;
+    padding: 0 20px;
+    text-align: center;
+}
+
+.contact-container h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: 3rem;
+    margin-bottom: 20px;
+    position: relative;
+}
+
+.contact-container h1::after {
+    content: "";
+    display: block;
+    width: 60px;
+    height: 2px;
+    background: #333;
+    margin: 20px auto 0;
+}
+
+.contact-container p {
+    font-family: 'Open Sans', sans-serif;
+    font-size: 1.2rem;
+    color: #555;
+    margin-bottom: 20px;
+    line-height: 1.6;
+}
+
+.email-link {
+    font-family: 'Open Sans', sans-serif;
+    font-size: 1.2rem;
+    color: #333;
+    text-decoration: underline;
+    transition: color 0.3s ease;
+}
+
+.email-link:hover {
+    color: #000;
+}
+
+
+.site-nav {
+    display: flex;
+    justify-content: center;
+    gap: 2rem;
+    padding: 20px 0;
+    background: #fff;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+}
+/* Basis-Animation: Unsichtbar und verschoben */
+.slide-in-left, .slide-in-right {
+    opacity: 0;
+    transform: translateX(-50px);
+    animation: slideIn 1s forwards ease;
+}
+
+.slide-in-right {
+    transform: translateX(50px);
+}
+
+/* Keyframes: Von unsichtbar zu sichtbar + Position 0 */
+@keyframes slideIn {
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+/* Verzögerungen für schönes nacheinander erscheinen */
+.portfolio-item:nth-child(1) {
+    animation-delay: 0.2s;
+}
+.portfolio-item:nth-child(2) {
+    animation-delay: 0.4s;
+}
+.portfolio-item:nth-child(3) {
+    animation-delay: 0.6s;
+}
+
+.site-nav a {
+    text-decoration: none;
+    color: #333;
+    font-size: 1rem;
+    letter-spacing: 1px;
+}
+
+.site-nav a:hover {
+    color: #000;
+}
+
+.hero {
+    height: 80vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+}
+
+
+.hero p {
+    font-size: 1.2rem;
+    color: #555;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .hero h1 {
+        font-size: 2.5rem;
+    }
+
+    .hero p {
+        font-size: 1rem;
+    }
+}
+
+.portfolio-item {
+    opacity: 0;
+    transform: translateY(30px);
+    animation: fadeSlideIn 1.2s ease forwards;
+}
+
+
+body {
+    font-family: 'Open Sans', sans-serif;
+    margin: 0;
+    padding: 0;
+}
+
+.portfolio-container {
+    padding: 60px 20px;
+}
+
+.portfolio-item {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    max-width: 1200px;
+    margin: 80px auto;
+    gap: 40px;
+}
+
+.text {
+    flex: 1;
+}
+
+.text h2 {
+    font-family: 'Playfair Display', serif;
+    font-size: 2.5rem;
+    margin-bottom: 20px;
+}
+
+.text p {
+    font-size: 1.2rem;
+    line-height: 1.6;
+}
+
+.image {
+    flex: 1;
+}
+
+.image img {
+    width: 100%;
+    height: auto;
+    border-radius: 10px;
+    object-fit: cover;
+}
+
+/* Scroll Animation - Hidden Items */
+.hidden {
+    opacity: 0;
+    transform: translateX(-50px);
+    transition: all 1s ease-out;
+}
+
+/* When item comes into view */
+.show {
+    opacity: 1;
+    transform: translateX(0);
+}
+
+
+@keyframes fadeSlideIn {
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+.about-container {
+    max-width: 800px;
+    margin: 100px auto;
+    padding: 0 20px;
+    text-align: center;
+}
+
+.about-container h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: 3rem;
+    margin-bottom: 10px;
+    position: relative;
+}
+
+.about-container h1::after {
+    content: "";
+    display: block;
+    width: 360px;
+    height: 2px;
+    background: #333;
+    margin: 20px auto 0;
+}
+.about-container p {
+    font-family: 'Open Sans', sans-serif;
+    font-size: 1.2rem;
+    line-height: 1.6;
+    color: #555;
+}
+
+/* Für die Fade-in Animation (falls noch nicht vorhanden) */
+.fade-in {
+    opacity: 0;
+    animation: fadeInAnimation 1.5s ease forwards;
+    animation-delay: 0.5s;
+}
+
+@keyframes fadeInAnimation {
+    to {
+        opacity: 1;
+    }
+}
+
+/* Damit sie leicht versetzt erscheinen */
+.portfolio-item:nth-child(1) {
+    animation-delay: 0.3s;
+}
+.portfolio-item:nth-child(2) {
+    animation-delay: 0.6s;
+}
+.portfolio-item:nth-child(3) {
+    animation-delay: 0.9s;
+}
+
+.social-icons {
+    margin: 20px 0;
+    font-size: 1.2rem;
+}
+
+.social-icons a {
+    color: #333;
+    text-decoration: none;
+    margin: 0 10px;
+}
+
+.social-icons a:hover {
+    text-decoration: underline;
+}
+
+.contact-form {
+    max-width: 500px;
+    margin: 40px auto 0;
+    text-align: left;
+}
+
+.form-group {
+    margin-bottom: 20px;
+}
+
+.form-group label {
+    display: block;
+    font-weight: bold;
+    margin-bottom: 8px;
+}
+
+.form-group input,
+.form-group textarea {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+.btn {
+    background-color: #333;
+    color: #fff;
+    padding: 12px 25px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.btn:hover {
+    background-color: #555;
+}
+
