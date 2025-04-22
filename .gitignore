@@ -1,0 +1,29 @@
+# Mac-typische Dateien
+.DS_Store
+
+# Node.js Dinge (falls du mal npm verwendest)
+node_modules/
+
+# Cache und temporäre Dateien
+*.log
+*.tmp
+
+# Build-Ordner oder Dist (wenn später verwendet)
+dist/
+build/
+
+# Assets, die du nicht tracken willst (z.B. große Original-Bilder)
+assets/originals/
+
+# Persönliche Dateien oder Backups
+*.bak
+*.swp
+
+# VSCode spezifische Settings (nur lokal benötigt)
+.vscode/
+
+# System files (Windows)
+Thumbs.db
+desktop.ini
+
+.idea/*
