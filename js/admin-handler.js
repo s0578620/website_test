@@ -14,7 +14,7 @@ document.getElementById('story-form').addEventListener('submit', async (e) => {
     const text = document.getElementById('story-text').innerHTML.trim();
     const fileInput = document.getElementById('story-image-file');
     const file = fileInput.files[0];
-    const isPublished = document.getElementById('story-published').checked; // ✅ HIER
+    const isPublished = document.getElementById('story-published').checked;
 
     if (!file) return alert("❌ No image selected.");
 
@@ -22,18 +22,13 @@ document.getElementById('story-form').addEventListener('submit', async (e) => {
     const filePath = `${user.data.user.id}/${Date.now()}_${file.name}`;
 
     const { error: uploadError } = await supabase
-        .storage
-        .from('story-images')
+        .storage.from('story-images')
         .upload(filePath, file);
 
-    if (uploadError) {
-        alert("❌ Upload failed: " + uploadError.message);
-        return;
-    }
+    if (uploadError) return alert("❌ Upload failed: " + uploadError.message);
 
     const { data: publicUrlData } = supabase
-        .storage
-        .from('story-images')
+        .storage.from('story-images')
         .getPublicUrl(filePath);
 
     const imageUrl = publicUrlData.publicUrl;
@@ -45,7 +40,7 @@ document.getElementById('story-form').addEventListener('submit', async (e) => {
             text,
             image_url: imageUrl,
             user_id: user.data.user.id,
-            is_published: isPublished // ✅ HIER eingefügt
+            is_published: isPublished
         }]);
 
     if (error) {
@@ -57,20 +52,34 @@ document.getElementById('story-form').addEventListener('submit', async (e) => {
 });
 
 
-// 🔃 Bestehende Stories laden
+// 🔃 Bestehende Stories laden + Admin prüfen
 document.addEventListener('DOMContentLoaded', async () => {
-    const authorInput = document.getElementById("site-author");
-    if (authorInput) {
-        const { data, error } = await supabase
-            .from('site_config')
-            .select('value')
-            .eq('key', 'author_name')
-            .single();
-        if (!error && data?.value) authorInput.value = data.value;
+    const loginBtn = document.getElementById("login-btn");
+    const navAdmin = document.querySelector('a[href="admin.html"]');
+    const container = document.getElementById("admin-stories");
+
+    const { data: { session } } = await supabase.auth.getSession();
+    const user = session?.user;
+    if (!user) return;
+
+    const { data: isAdmin, error } = await supabase
+        .from('admins')
+        .select('id')
+        .eq('id', user.id)
+        .single();
+
+    const isAuthorized = !!isAdmin;
+    console.log("🔐 User ID:", user.id);
+    console.log("🛂 Admin erlaubt:", isAuthorized);
+
+    if (window.location.pathname.includes("admin.html") && !isAuthorized) {
+        window.location.href = "index.html";
     }
 
-    const container = document.getElementById('admin-stories');
-    if (!container) return;
+    if (loginBtn) loginBtn.style.display = "none";
+    if (navAdmin) navAdmin.style.display = isAuthorized ? "inline-block" : "none";
+
+    if (!isAuthorized || !container) return;
 
     const { data: stories, error: fetchError } = await supabase
         .from('stories')
@@ -89,8 +98,8 @@ document.addEventListener('DOMContentLoaded', async () => {
             <h3 contenteditable="false">${story.title}</h3>
             <p contenteditable="false">${story.text}</p>
             <input type="text" class="image-url-input" value="${story.image_url}" style="width:100%; margin:10px 0;" disabled>
-            <img src="${story.image_url}" alt="${story.title}" class="preview-image" style="max-width:150px; margin-top:10px;"><br>
-            <input type="file" class="edit-image-file" accept="image/*" style="display:none; margin-top:10px;"><br>
+            <img src="${story.image_url}" alt="${story.title}" class="preview-image" style="max-width:150px;"><br>
+            <input type="file" class="edit-image-file" accept="image/*" style="display:none;"><br>
             <label>
               <input type="checkbox" class="publish-checkbox" ${story.is_published ? 'checked' : ''}> Veröffentlicht
             </label>
@@ -104,19 +113,18 @@ document.addEventListener('DOMContentLoaded', async () => {
 
         const titleEl = storyDiv.querySelector('h3');
         const textEl = storyDiv.querySelector('p');
-        const editBtn = storyDiv.querySelector('.edit-story');
-        const saveBtn = storyDiv.querySelector('.save-story');
         const imageInput = storyDiv.querySelector('.image-url-input');
         const fileInput = storyDiv.querySelector('.edit-image-file');
         const previewImage = storyDiv.querySelector('.preview-image');
         const publishCheckbox = storyDiv.querySelector('.publish-checkbox');
+        const editBtn = storyDiv.querySelector('.edit-story');
+        const saveBtn = storyDiv.querySelector('.save-story');
 
         editBtn.addEventListener('click', () => {
             titleEl.contentEditable = "true";
             textEl.contentEditable = "true";
             imageInput.disabled = false;
             fileInput.style.display = "inline-block";
-            titleEl.focus();
             editBtn.style.display = "none";
             saveBtn.style.display = "inline-block";
         });
@@ -136,9 +144,9 @@ document.addEventListener('DOMContentLoaded', async () => {
             let newImageUrl = imageInput.value.trim();
 
             if (fileInput.files.length > 0) {
-                const user = await supabase.auth.getUser();
+                const { data: user } = await supabase.auth.getUser();
                 const file = fileInput.files[0];
-                const filePath = `${user.data.user.id}/${Date.now()}_${file.name}`;
+                const filePath = `${user.user.id}/${Date.now()}_${file.name}`;
 
                 const { error: uploadError } = await supabase
                     .storage.from('story-images')
@@ -153,12 +161,17 @@ document.addEventListener('DOMContentLoaded', async () => {
                 newImageUrl = publicUrlData.publicUrl;
             }
 
-            const { error } = await supabase
+            const { error: updateError } = await supabase
                 .from('stories')
-                .update({ title: newTitle, text: newText, image_url: newImageUrl, is_published: published })
+                .update({
+                    title: newTitle,
+                    text: newText,
+                    image_url: newImageUrl,
+                    is_published: published
+                })
                 .eq('id', story.id);
 
-            if (error) {
+            if (updateError) {
                 alert("❌ Could not update story.");
             } else {
                 alert("✅ Story updated!");
@@ -166,7 +179,6 @@ document.addEventListener('DOMContentLoaded', async () => {
                 textEl.contentEditable = "false";
                 imageInput.disabled = true;
                 fileInput.style.display = "none";
-                previewImage.src = newImageUrl;
                 editBtn.style.display = "inline-block";
                 saveBtn.style.display = "none";
             }
@@ -174,7 +186,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
         const deleteBtn = storyDiv.querySelector('.delete-story');
         deleteBtn.addEventListener('click', async () => {
-            if (confirm('Delete this story?')) {
+            if (confirm("Delete this story?")) {
                 const { error } = await supabase
                     .from('stories')
                     .delete()
