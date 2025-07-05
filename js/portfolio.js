@@ -25,23 +25,22 @@ document.addEventListener('DOMContentLoaded', async () => {
     console.log('Geladene Stories:', stories);
 
     stories.forEach(story => {
-        console.log('Geladene Story:', story);
-
         const section = document.createElement('section');
         section.className = 'portfolio-item';
 
         section.innerHTML = `
-            <div class="portfolio-image">
-                <img src="${story.image_url || ''}" alt="${story.title}" />
-            </div>
-            <div class="portfolio-text">
-                <h2>${story.title || 'Untitled'}</h2>
-                <div class="story-content">
-                    ${story.text || ''}
-                </div>
-            </div>
-        `;
+        <div class="portfolio-image">
+            <img src="${story.image_url || ''}" alt="${story.title}" />
+        </div>
+        <div class="portfolio-text">
+            <h2>${story.title || 'Untitled'}</h2>
+            <div class="story-content">${story.text || ''}</div>
+        </div>
+    `;
+
+        section.classList.add('show'); // 👈 Sichtbar machen
 
         container.appendChild(section);
     });
+
 });
