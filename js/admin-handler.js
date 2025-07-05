@@ -3,7 +3,9 @@ import { supabase } from './config.js';
 // 🔐 Auth check – nur eingeloggte dürfen weiter
 (async () => {
     const { data: { session } } = await supabase.auth.getSession();
-    if (!session) window.location.href = "login.html";
+    if (!session) {
+        window.location.href = "login.html";
+    }
 })();
 
 // 📝 Neue Story speichern
@@ -12,18 +14,14 @@ document.getElementById('story-form').addEventListener('submit', async (e) => {
 
     const title = document.getElementById('story-title').value.trim();
     const text = document.getElementById('story-text').value.trim();
-    const file = document.getElementById('story-image-file').files[0];
+    const fileInput = document.getElementById('story-image-file');
+    const file = fileInput.files[0];
 
-    if (!title || !text || !file) return alert("❌ All fields required, including image.");
+    if (!file) return alert("❌ No image selected.");
 
-    const { data: userData } = await supabase.auth.getUser();
-    const userId = userData?.user?.id;
-    if (!userId) return alert("❌ Could not get user.");
+    const user = await supabase.auth.getUser();
+    const filePath = `${user.data.user.id}/${Date.now()}_${file.name}`;
 
-    const fileExt = file.name.split('.').pop();
-    const filePath = `${userId}/${Date.now()}.${fileExt}`;
-
-    // 📤 Upload image to Supabase Storage
     const { error: uploadError } = await supabase
         .storage
         .from('story-images')
@@ -41,10 +39,9 @@ document.getElementById('story-form').addEventListener('submit', async (e) => {
 
     const imageUrl = publicUrlData.publicUrl;
 
-    // 📦 Insert story
     const { error } = await supabase
         .from('stories')
-        .insert([{ title, text, image_url: imageUrl, user_id: userId }]);
+        .insert([{ title, text, image_url: imageUrl, user_id: user.data.user.id }]);
 
     if (error) {
         alert("❌ Failed to save story: " + error.message);
@@ -54,9 +51,8 @@ document.getElementById('story-form').addEventListener('submit', async (e) => {
     }
 });
 
-// 🔃 Autorname & Storyliste beim Laden
+// 🔃 Bestehende Stories & Autor laden
 document.addEventListener('DOMContentLoaded', async () => {
-    // Autorname laden
     const authorInput = document.getElementById("site-author");
     if (authorInput) {
         const { data, error } = await supabase
@@ -67,7 +63,6 @@ document.addEventListener('DOMContentLoaded', async () => {
         if (!error && data?.value) authorInput.value = data.value;
     }
 
-    // Stories laden
     const container = document.getElementById('admin-stories');
     if (!container) return;
 
@@ -76,7 +71,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         .select('*')
         .order('created_at', { ascending: false });
 
-    if (fetchError || !stories?.length) {
+    if (fetchError || !stories || stories.length === 0) {
         container.innerHTML += '<p>No stories saved yet.</p>';
         return;
     }
@@ -87,8 +82,10 @@ document.addEventListener('DOMContentLoaded', async () => {
         storyDiv.innerHTML = `
             <h3 contenteditable="false">${story.title}</h3>
             <p contenteditable="false">${story.text}</p>
-            <input type="text" class="image-url-input" value="${story.image_url}" style="width: 100%; margin: 10px 0;" disabled>
+            <input type="text" class="image-url-input" value="${story.image_url}" style="width:100%; margin:10px 0;" disabled>
             <img src="${story.image_url}" alt="${story.title}" class="preview-image" style="max-width:150px; margin-top:10px;"><br>
+            <input type="file" class="edit-image-file" accept="image/*" style="display:none; margin-top:10px;">
+            <br>
             <button class="edit-story" data-id="${story.id}">✏️ Edit</button>
             <button class="save-story" data-id="${story.id}" style="display:none;">💾 Save</button>
             <button class="delete-story" data-id="${story.id}">🗑️ Delete</button>
@@ -98,24 +95,62 @@ document.addEventListener('DOMContentLoaded', async () => {
 
         const titleEl = storyDiv.querySelector('h3');
         const textEl = storyDiv.querySelector('p');
-        const imageInput = storyDiv.querySelector('.image-url-input');
-        const previewImage = storyDiv.querySelector('.preview-image');
         const editBtn = storyDiv.querySelector('.edit-story');
         const saveBtn = storyDiv.querySelector('.save-story');
+        const imageInput = storyDiv.querySelector('.image-url-input');
+        const fileInput = storyDiv.querySelector('.edit-image-file');
+        const previewImage = storyDiv.querySelector('.preview-image');
 
         // ✏️ Edit
         editBtn.addEventListener('click', () => {
-            [titleEl, textEl].forEach(el => el.contentEditable = "true");
+            titleEl.contentEditable = "true";
+            textEl.contentEditable = "true";
             imageInput.disabled = false;
+            fileInput.style.display = "inline-block";
+            titleEl.focus();
             editBtn.style.display = "none";
-            saveBtn.style.display = "inline";
+            saveBtn.style.display = "inline-block";
+        });
+
+        // 👁️‍🗨️ Vorschau des neuen Bilds live anzeigen
+        fileInput.addEventListener('change', () => {
+            if (fileInput.files.length > 0) {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    previewImage.src = e.target.result;
+                };
+                reader.readAsDataURL(fileInput.files[0]);
+            }
         });
 
         // 💾 Save
         saveBtn.addEventListener('click', async () => {
             const newTitle = titleEl.innerText.trim();
             const newText = textEl.innerText.trim();
-            const newImageUrl = imageInput.value.trim();
+            let newImageUrl = imageInput.value.trim();
+
+            if (fileInput.files.length > 0) {
+                const user = await supabase.auth.getUser();
+                const file = fileInput.files[0];
+                const filePath = `${user.data.user.id}/${Date.now()}_${file.name}`;
+
+                const { error: uploadError } = await supabase
+                    .storage
+                    .from('story-images')
+                    .upload(filePath, file);
+
+                if (uploadError) {
+                    alert("❌ Upload failed: " + uploadError.message);
+                    return;
+                }
+
+                const { data: publicUrlData } = supabase
+                    .storage
+                    .from('story-images')
+                    .getPublicUrl(filePath);
+
+                newImageUrl = publicUrlData.publicUrl;
+            }
 
             const { error } = await supabase
                 .from('stories')
@@ -124,26 +159,32 @@ document.addEventListener('DOMContentLoaded', async () => {
 
             if (error) {
                 alert("❌ Could not update story.");
-                console.error(error);
             } else {
                 alert("✅ Story updated!");
-                [titleEl, textEl].forEach(el => el.contentEditable = "false");
+                titleEl.contentEditable = "false";
+                textEl.contentEditable = "false";
                 imageInput.disabled = true;
+                fileInput.style.display = "none";
                 previewImage.src = newImageUrl;
-                editBtn.style.display = "inline";
+                editBtn.style.display = "inline-block";
                 saveBtn.style.display = "none";
             }
         });
 
         // 🗑️ Delete
-        storyDiv.querySelector('.delete-story').addEventListener('click', async () => {
+        const deleteBtn = storyDiv.querySelector('.delete-story');
+        deleteBtn.addEventListener('click', async () => {
             if (confirm('Delete this story?')) {
                 const { error } = await supabase
                     .from('stories')
                     .delete()
                     .eq('id', story.id);
-                if (error) alert("❌ Delete failed.");
-                else location.reload();
+
+                if (error) {
+                    alert("❌ Delete failed.");
+                } else {
+                    location.reload();
+                }
             }
         });
     });
@@ -159,16 +200,19 @@ if (logoutBtn) {
 }
 
 // ✏️ Autorname speichern
-document.getElementById('save-author')?.addEventListener('click', async () => {
-    const author = document.getElementById("site-author").value.trim();
-    const { error } = await supabase
-        .from('site_config')
-        .upsert([{ key: 'author_name', value: author }], { onConflict: ['key'] });
+const saveAuthorBtn = document.getElementById("save-author");
+if (saveAuthorBtn) {
+    saveAuthorBtn.addEventListener("click", async () => {
+        const author = document.getElementById("site-author").value.trim();
 
-    if (error) {
-        alert("❌ Could not save name.");
-        console.error(error);
-    } else {
-        alert("✅ Author name updated.");
-    }
-});
+        const { error } = await supabase
+            .from('site_config')
+            .upsert([{ key: 'author_name', value: author }], { onConflict: ['key'] });
+
+        if (error) {
+            alert("❌ Could not save name.");
+        } else {
+            alert("✅ Author name updated.");
+        }
+    });
+}

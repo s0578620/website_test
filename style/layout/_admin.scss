@@ -1,4 +1,3 @@
-// _admin.scss
 @use '../base/variables';
 
 .admin-container {
@@ -25,18 +24,103 @@
 .admin-story-entry {
   margin-bottom: 30px;
   padding: 10px;
+  background: variables.$white;
+  border-radius: 8px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+  text-align: left;
 
-  button.delete-story {
-    margin-top: 10px;
-    background-color: variables.$crimson;
-    color: white;
-    border: none;
+  h3,
+  p {
+    margin-bottom: 10px;
+  }
+
+  .image-url-input {
+    width: 100%;
+    padding: 6px 8px;
+    font-size: 0.85rem;
+    color: variables.$dark-gray;
+    background-color: #fafafa;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    margin-bottom: 10px;
+  }
+
+  .edit-image-file {
+    display: none;
+    margin: 10px auto;
+    padding: 6px;
+    font-size: 0.95rem;
+    border: 1px solid variables.$gray;
     border-radius: 6px;
-    padding: 6px 12px;
+    background-color: variables.$white;
     cursor: pointer;
 
     &:hover {
-      background-color: variables.$dark-red;
+      border-color: variables.$primary;
     }
+
+    &.active {
+      display: block;
+    }
+  }
+
+  .preview-image {
+    display: block;
+    margin: 10px auto;
+    max-width: 150px;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    transition: transform 0.2s ease;
+
+    &:hover {
+      transform: scale(1.05);
+    }
+  }
+
+  button {
+    margin: 5px;
+    padding: 6px 12px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: bold;
+
+    &.delete-story {
+      background-color: variables.$crimson;
+      color: white;
+
+      &:hover {
+        background-color: variables.$dark-red;
+      }
+    }
+
+    &.edit-story {
+      background-color: variables.$gold;
+      color: black;
+
+      &:hover {
+        background-color: darken(variables.$gold, 10%);
+      }
+    }
+
+    &.save-story {
+      background-color: variables.$green;
+      color: white;
+
+      &:hover {
+        background-color: darken(variables.$green, 10%);
+      }
+    }
+  }
+}
+
+// 📱 Responsive
+@media (max-width: 600px) {
+  .admin-container {
+    padding: 0 10px;
+  }
+
+  .admin-story-entry img {
+    max-width: 100%;
   }
 }
