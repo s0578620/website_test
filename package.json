@@ -11,5 +11,8 @@
   "private": true,
   "devDependencies": {
     "sass": "^1.89.0"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "^2.50.3"
   }
 }

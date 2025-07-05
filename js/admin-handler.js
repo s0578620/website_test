@@ -1,21 +1,20 @@
 import { supabase } from './config.js';
 
-// 🔐 Auth check – nur eingeloggte dürfen weiter
+// 🔐 Auth check
 (async () => {
     const { data: { session } } = await supabase.auth.getSession();
-    if (!session) {
-        window.location.href = "login.html";
-    }
+    if (!session) window.location.href = "login.html";
 })();
 
 // 📝 Neue Story speichern
 document.getElementById('story-form').addEventListener('submit', async (e) => {
     e.preventDefault();
 
-    const title = document.getElementById('story-title').value.trim();
-    const text = document.getElementById('story-text').value.trim();
+    const title = document.getElementById('story-title').innerHTML.trim();
+    const text = document.getElementById('story-text').innerHTML.trim();
     const fileInput = document.getElementById('story-image-file');
     const file = fileInput.files[0];
+    const isPublished = document.getElementById('story-published').checked; // ✅ HIER
 
     if (!file) return alert("❌ No image selected.");
 
@@ -41,7 +40,13 @@ document.getElementById('story-form').addEventListener('submit', async (e) => {
 
     const { error } = await supabase
         .from('stories')
-        .insert([{ title, text, image_url: imageUrl, user_id: user.data.user.id }]);
+        .insert([{
+            title,
+            text,
+            image_url: imageUrl,
+            user_id: user.data.user.id,
+            is_published: isPublished // ✅ HIER eingefügt
+        }]);
 
     if (error) {
         alert("❌ Failed to save story: " + error.message);
@@ -51,7 +56,8 @@ document.getElementById('story-form').addEventListener('submit', async (e) => {
     }
 });
 
-// 🔃 Bestehende Stories & Autor laden
+
+// 🔃 Bestehende Stories laden
 document.addEventListener('DOMContentLoaded', async () => {
     const authorInput = document.getElementById("site-author");
     if (authorInput) {
@@ -84,7 +90,10 @@ document.addEventListener('DOMContentLoaded', async () => {
             <p contenteditable="false">${story.text}</p>
             <input type="text" class="image-url-input" value="${story.image_url}" style="width:100%; margin:10px 0;" disabled>
             <img src="${story.image_url}" alt="${story.title}" class="preview-image" style="max-width:150px; margin-top:10px;"><br>
-            <input type="file" class="edit-image-file" accept="image/*" style="display:none; margin-top:10px;">
+            <input type="file" class="edit-image-file" accept="image/*" style="display:none; margin-top:10px;"><br>
+            <label>
+              <input type="checkbox" class="publish-checkbox" ${story.is_published ? 'checked' : ''}> Veröffentlicht
+            </label>
             <br>
             <button class="edit-story" data-id="${story.id}">✏️ Edit</button>
             <button class="save-story" data-id="${story.id}" style="display:none;">💾 Save</button>
@@ -100,8 +109,8 @@ document.addEventListener('DOMContentLoaded', async () => {
         const imageInput = storyDiv.querySelector('.image-url-input');
         const fileInput = storyDiv.querySelector('.edit-image-file');
         const previewImage = storyDiv.querySelector('.preview-image');
+        const publishCheckbox = storyDiv.querySelector('.publish-checkbox');
 
-        // ✏️ Edit
         editBtn.addEventListener('click', () => {
             titleEl.contentEditable = "true";
             textEl.contentEditable = "true";
@@ -112,21 +121,18 @@ document.addEventListener('DOMContentLoaded', async () => {
             saveBtn.style.display = "inline-block";
         });
 
-        // 👁️‍🗨️ Vorschau des neuen Bilds live anzeigen
         fileInput.addEventListener('change', () => {
             if (fileInput.files.length > 0) {
                 const reader = new FileReader();
-                reader.onload = (e) => {
-                    previewImage.src = e.target.result;
-                };
+                reader.onload = (e) => previewImage.src = e.target.result;
                 reader.readAsDataURL(fileInput.files[0]);
             }
         });
 
-        // 💾 Save
         saveBtn.addEventListener('click', async () => {
             const newTitle = titleEl.innerText.trim();
             const newText = textEl.innerText.trim();
+            const published = publishCheckbox.checked;
             let newImageUrl = imageInput.value.trim();
 
             if (fileInput.files.length > 0) {
@@ -135,18 +141,13 @@ document.addEventListener('DOMContentLoaded', async () => {
                 const filePath = `${user.data.user.id}/${Date.now()}_${file.name}`;
 
                 const { error: uploadError } = await supabase
-                    .storage
-                    .from('story-images')
+                    .storage.from('story-images')
                     .upload(filePath, file);
 
-                if (uploadError) {
-                    alert("❌ Upload failed: " + uploadError.message);
-                    return;
-                }
+                if (uploadError) return alert("❌ Upload failed: " + uploadError.message);
 
                 const { data: publicUrlData } = supabase
-                    .storage
-                    .from('story-images')
+                    .storage.from('story-images')
                     .getPublicUrl(filePath);
 
                 newImageUrl = publicUrlData.publicUrl;
@@ -154,7 +155,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
             const { error } = await supabase
                 .from('stories')
-                .update({ title: newTitle, text: newText, image_url: newImageUrl })
+                .update({ title: newTitle, text: newText, image_url: newImageUrl, is_published: published })
                 .eq('id', story.id);
 
             if (error) {
@@ -171,7 +172,6 @@ document.addEventListener('DOMContentLoaded', async () => {
             }
         });
 
-        // 🗑️ Delete
         const deleteBtn = storyDiv.querySelector('.delete-story');
         deleteBtn.addEventListener('click', async () => {
             if (confirm('Delete this story?')) {
@@ -180,11 +180,8 @@ document.addEventListener('DOMContentLoaded', async () => {
                     .delete()
                     .eq('id', story.id);
 
-                if (error) {
-                    alert("❌ Delete failed.");
-                } else {
-                    location.reload();
-                }
+                if (error) alert("❌ Delete failed.");
+                else location.reload();
             }
         });
     });
@@ -209,10 +206,20 @@ if (saveAuthorBtn) {
             .from('site_config')
             .upsert([{ key: 'author_name', value: author }], { onConflict: ['key'] });
 
-        if (error) {
-            alert("❌ Could not save name.");
-        } else {
-            alert("✅ Author name updated.");
-        }
+        if (error) alert("❌ Could not save name.");
+        else alert("✅ Author name updated.");
+    });
+
+    window.execCmd = function(command, value = null) {
+        document.execCommand(command, false, value);
+    };
+
+    document.querySelectorAll('.editor-toolbar button').forEach(button => {
+        button.addEventListener('click', (e) => {
+            e.preventDefault();
+            const command = button.getAttribute('data-command');
+            const value = button.getAttribute('data-value') || null;
+            document.execCommand(command, false, value);
+        });
     });
 }

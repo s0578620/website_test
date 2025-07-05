@@ -1,0 +1,16 @@
+.rich-editor {
+  min-height: 120px;
+  padding: 10px;
+  border: 1px solid #ccc;
+  background: #fff;
+  border-radius: 6px;
+  overflow-y: auto;
+}
+
+.editor-toolbar button {
+  padding: 5px 8px;
+  margin-right: 4px;
+  border: 1px solid #ccc;
+  background: #eee;
+  cursor: pointer;
+}
