@@ -1,0 +1,28 @@
+// _social.scss
+@use '../base/variables';
+
+.social-icons {
+  margin: 20px 0;
+  font-size: 1.2rem;
+
+  a {
+    color: variables.$primary-color;
+    text-decoration: none;
+    margin: 0 10px;
+
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+}
+
+.email-link {
+  font-size: 1.2rem;
+  color: variables.$primary-color;
+  text-decoration: underline;
+  transition: color 0.3s ease;
+
+  &:hover {
+    color: black;
+  }
+}

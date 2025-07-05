@@ -1,0 +1,29 @@
+// _about.scss
+@use '../base/variables';
+@use '../components/shared';
+
+.about-container {
+  @include shared.shared-container;
+
+  h1 {
+    font-family: variables.$font-serif;
+    font-size: 3rem;
+    margin-bottom: 20px;
+    position: relative;
+
+    &::after {
+      content: "";
+      display: block;
+      height: 2px;
+      background: variables.$primary-color;
+      margin: 20px auto 0;
+      width: 360px;
+    }
+  }
+
+  p {
+    font-size: 1.2rem;
+    color: #555;
+    line-height: 1.6;
+  }
+}

@@ -1,14 +1,12 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
+    <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin - Add New Story</title>
-    <link href="https://fonts.googleapis.com/css2?family=Open+Sans&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="style.css">
+    <title>Admin - Add Story</title>
+    <link rel="stylesheet" href="style/style.css">
 </head>
 <body>
-
 <header class="site-header">
     <nav class="site-nav">
         <a href="index.html">Home</a>
@@ -16,37 +14,43 @@
         <a href="about.html">About</a>
         <a href="contact.html">Contact</a>
         <a href="admin.html" class="active">Admin</a>
+        <button id="logout-btn" style="float:right;">Logout</button>
     </nav>
 </header>
 
 <main class="admin-container">
     <h1>Add a New Story</h1>
-
     <form id="story-form">
         <div class="form-group">
             <label for="story-title">Story Title</label>
-            <input type="text" id="story-title" placeholder="Enter story title" required>
+            <input type="text" id="story-title" required>
         </div>
-
         <div class="form-group">
             <label for="story-text">Story Text</label>
-            <textarea id="story-text" placeholder="Enter your story..." required></textarea>
+            <textarea id="story-text" required></textarea>
         </div>
-
         <div class="form-group">
-            <label for="story-image">Image URL</label>
-            <input type="text" id="story-image" placeholder="Enter image URL" required>
+            <label for="story-image-file">Upload Image</label>
+            <input type="file" id="story-image-file" accept="image/*" required>
         </div>
-
         <button type="submit">Save Story</button>
     </form>
-    <section id="admin-stories" class="admin-preview-container">
-        <h2 style="margin-top: 40px;">Your Saved Stories</h2>
-        <!-- Stories will be listed here with delete buttons -->
+
+    <hr style="margin: 40px 0;">
+
+    <section id="site-config">
+        <h2>Update Author Name</h2>
+        <input type="text" id="site-author" placeholder="Author name">
+        <button id="save-author">Save Name</button>
     </section>
 
+    <section id="admin-stories" class="admin-preview-container">
+        <h2>Your Saved Stories</h2>
+        <!-- Stories will be inserted here -->
+    </section>
 </main>
-<script src="admin-handler.js"></script>
 
+<!-- Scripts -->
+<script type="module" src="js/admin-handler.js"></script>
 </body>
 </html>

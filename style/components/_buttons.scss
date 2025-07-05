@@ -1,0 +1,18 @@
+// _buttons.scss
+@use '../base/variables';
+
+button[type="submit"],
+.btn-primary {
+  background: variables.$primary-color;
+  color: white;
+  padding: 12px 25px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 1.1rem;
+  transition: background 0.3s;
+
+  &:hover {
+    background: #555;
+  }
+}

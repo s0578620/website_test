@@ -1,3 +1,4 @@
+// scroll-animation.js
 let lastScrollY = window.scrollY;
 let currentIndex = 0;
 const items = document.querySelectorAll('.portfolio-item');

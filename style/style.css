@@ -1,0 +1,282 @@
+body {
+  font-family: "Open Sans", sans-serif;
+}
+
+.site-nav {
+  display: flex;
+  justify-content: center;
+  gap: 2rem;
+  padding: 20px 0;
+  background: #fff;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+.site-nav a {
+  text-decoration: none;
+  color: #333;
+  font-size: 1rem;
+  letter-spacing: 1px;
+}
+.site-nav a:hover {
+  color: black;
+}
+
+.hero {
+  height: 80vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+.hero h1 {
+  font-family: "Playfair Display", serif;
+}
+.hero p {
+  font-size: 1.2rem;
+  color: #555;
+}
+
+@media (max-width: 768px) {
+  .hero h1 {
+    font-size: 2.5rem;
+  }
+  .hero p {
+    font-size: 1rem;
+  }
+}
+.portfolio-container {
+  position: relative;
+  overflow-x: hidden;
+  padding: 60px 20px;
+}
+.portfolio-container .portfolio-item {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  max-width: 1200px;
+  margin: 100px auto;
+  gap: 40px;
+  min-height: 100vh;
+  opacity: 0;
+  transform: translateX(100%);
+  transition: all 1s ease;
+  position: relative;
+  z-index: 1;
+}
+.portfolio-container .portfolio-item.show, .portfolio-container .portfolio-item.active, .portfolio-container .portfolio-item.active-in {
+  opacity: 1;
+  transform: translateX(0);
+  z-index: 2;
+}
+.portfolio-container .portfolio-item.exit-left, .portfolio-container .portfolio-item.fade-left, .portfolio-container .portfolio-item.active-out {
+  opacity: 0;
+  transform: translateX(-100px);
+  z-index: 0;
+}
+.portfolio-container .portfolio-item:nth-child(1) {
+  animation-delay: 0.3s;
+}
+.portfolio-container .portfolio-item:nth-child(2) {
+  animation-delay: 0.6s;
+}
+.portfolio-container .portfolio-item:nth-child(3) {
+  animation-delay: 0.9s;
+}
+.portfolio-container .portfolio-item .text, .portfolio-container .portfolio-item .image {
+  flex: 1;
+}
+.portfolio-container .portfolio-item .text h2 {
+  font-family: "Playfair Display", serif;
+  font-size: 2.5rem;
+  margin-bottom: 20px;
+}
+.portfolio-container .portfolio-item .text p {
+  font-size: 1.2rem;
+  line-height: 1.6;
+}
+.portfolio-container .portfolio-item .image img {
+  width: 100%;
+  height: auto;
+  border-radius: 10px;
+  object-fit: cover;
+}
+
+.form-group {
+  margin-bottom: 20px;
+}
+.form-group label {
+  font-weight: bold;
+  margin-bottom: 8px;
+  display: block;
+}
+.form-group input,
+.form-group textarea {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 1rem;
+}
+
+.admin-container {
+  max-width: 700px;
+  margin: 100px auto;
+  padding: 0 20px;
+  text-align: center;
+}
+
+#story-form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  margin-top: 40px;
+}
+
+.admin-preview-container {
+  margin-top: 40px;
+  padding: 20px;
+  background: #f4f4f4;
+  border-radius: 10px;
+}
+
+.admin-story-entry {
+  margin-bottom: 30px;
+  padding: 10px;
+}
+.admin-story-entry button.delete-story {
+  margin-top: 10px;
+  background-color: crimson;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  padding: 6px 12px;
+  cursor: pointer;
+}
+.admin-story-entry button.delete-story:hover {
+  background-color: darkred;
+}
+
+.contact-container {
+  max-width: 800px;
+  margin: 100px auto;
+  padding: 0 20px;
+  text-align: center;
+}
+.contact-container h1 {
+  font-family: "Playfair Display", serif;
+  font-size: 3rem;
+  margin-bottom: 20px;
+  position: relative;
+}
+.contact-container h1::after {
+  content: "";
+  display: block;
+  height: 2px;
+  background: #333;
+  margin: 20px auto 0;
+  width: 60px;
+}
+.contact-container p {
+  font-size: 1.2rem;
+  color: #555;
+  line-height: 1.6;
+}
+
+.about-container {
+  max-width: 800px;
+  margin: 100px auto;
+  padding: 0 20px;
+  text-align: center;
+}
+.about-container h1 {
+  font-family: "Playfair Display", serif;
+  font-size: 3rem;
+  margin-bottom: 20px;
+  position: relative;
+}
+.about-container h1::after {
+  content: "";
+  display: block;
+  height: 2px;
+  background: #333;
+  margin: 20px auto 0;
+  width: 360px;
+}
+.about-container p {
+  font-size: 1.2rem;
+  color: #555;
+  line-height: 1.6;
+}
+
+button[type=submit],
+.btn-primary {
+  background: #333;
+  color: white;
+  padding: 12px 25px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 1.1rem;
+  transition: background 0.3s;
+}
+button[type=submit]:hover,
+.btn-primary:hover {
+  background: #555;
+}
+
+.fade-in,
+.fade-in-top,
+.fade-in-bottom,
+.slide-in-left,
+.slide-in-right {
+  opacity: 0;
+  animation: fadeInAnimation 1.5s ease forwards;
+  animation-delay: 0.5s;
+}
+
+.fade-in-top {
+  transform: translateY(-30px);
+}
+
+.fade-in-bottom {
+  transform: translateY(30px);
+}
+
+@keyframes fadeInAnimation {
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+@keyframes slideIn {
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+.social-icons {
+  margin: 20px 0;
+  font-size: 1.2rem;
+}
+.social-icons a {
+  color: #333;
+  text-decoration: none;
+  margin: 0 10px;
+}
+.social-icons a:hover {
+  text-decoration: underline;
+}
+
+.email-link {
+  font-size: 1.2rem;
+  color: #333;
+  text-decoration: underline;
+  transition: color 0.3s ease;
+}
+.email-link:hover {
+  color: black;
+}
+
+/*# sourceMappingURL=style.css.map */

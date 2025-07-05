@@ -1,0 +1,19 @@
+// _forms.scss
+.form-group {
+  margin-bottom: 20px;
+
+  label {
+    font-weight: bold;
+    margin-bottom: 8px;
+    display: block;
+  }
+
+  input,
+  textarea {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    font-size: 1rem;
+  }
+}

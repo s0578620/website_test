@@ -1,28 +1,29 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <link href="https://fonts.googleapis.com/css2?family=Open+Sans&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
-
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Bazi Writings - Author</title>
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="style/style.css" />
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
 </head>
 <body>
-
 <header class="site-header">
     <nav class="site-nav">
         <a href="index.html">Home</a>
         <a href="portfolio.html">Portfolio</a>
         <a href="about.html">About</a>
         <a href="contact.html">Contact</a>
+        <a href="login.html" style="margin-left:auto;">Admin Login</a>
+        <a href="register.html">Register</a>
+        <a href="admin.html" id="admin-link" style="display:none;">Admin Panel</a>
     </nav>
-
     <div class="hero fade-in">
-        <h1>Shana Bazi</h1>
+        <h1 id="author-name">Loading...</h1>
         <p>Author | Storyteller | Creative Mind</p>
     </div>
 </header>
 
+<script type="module" src="js/portfolio.js"></script>
 </body>
 </html>

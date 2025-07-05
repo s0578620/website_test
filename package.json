@@ -4,7 +4,12 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "live-server",
+    "build-css": "sass style/style.scss style/style.css",
+    "watch-css": "sass --watch style/style.scss:style/style.css"
   },
-  "private": true
+  "private": true,
+  "devDependencies": {
+    "sass": "^1.89.0"
+  }
 }
